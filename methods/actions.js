@@ -28,7 +28,6 @@ const transporter = nodeMailer.createTransport({
 var functions = {
   Home: function (req, res) {
     res.send({ msg: "Hello there !", success: true });
-    //res.sendFile(path.join(__dirname, "./front-end/out/index.html"));
   },
   RegisterUser: async (req, res) => {
     const { fullName, email, password, companyName, location } = req.body;

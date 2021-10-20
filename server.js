@@ -2,6 +2,7 @@ const fastify = require("fastify")();
 const connectMongo = require("./config/dbConfig");
 const routes = require("./routes/route");
 
+//HEROKU LOGGING :heroku logs -a zoho-invoice-server --tail
 //fastify plugins
 fastify.register(require("fastify-cors"), { origin: "*" });
 fastify.register(require("fastify-formbody"));
