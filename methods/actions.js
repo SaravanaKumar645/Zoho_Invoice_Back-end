@@ -69,6 +69,11 @@ var functions = {
             msg: "User Created Successfully !",
             accessToken: accessToken,
             refreshToken: refreshToken,
+            name: newUser.name,
+            picture: newUser.picture,
+            email: newUser.email,
+            company: newUser.companyName,
+            gps: newUser.location,
           });
         }
       });
@@ -104,6 +109,11 @@ var functions = {
               msg: "Login Successfull !",
               accessToken: accessToken,
               refreshToken: refreshToken,
+              name: user.name,
+              picture: user.picture,
+              email: user.email,
+              company: user.companyName,
+              gps: user.location,
             });
           } else {
             res.status(401).send({
