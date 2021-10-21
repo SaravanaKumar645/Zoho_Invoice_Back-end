@@ -6,7 +6,7 @@ const routes = require("./routes/route");
 //fastify plugins
 fastify.register(require("fastify-cookie"));
 fastify.register(require("fastify-cors"), {
-  origin: ["http://localhost:3000", "https://zoho-invoice-clone.vercel.app/"],
+  origin: ["http://localhost:3000", "https://zoho-invoice-clone.vercel.app"],
   credentials: true,
 });
 fastify.register(require("fastify-formbody"));
