@@ -4,13 +4,17 @@ const routes = require("./routes/route");
 
 //HEROKU LOGGING :heroku logs -a zoho-invoice-server --tail
 //fastify plugins
-fastify.register(require("fastify-cors"), { origin: "*" });
+fastify.register(require("fastify-cookie"));
+fastify.register(require("fastify-cors"), {
+  origin: ["http://localhost:3000", "https://zoho-invoice-clone.vercel.app/"],
+  credentials: true,
+});
 fastify.register(require("fastify-formbody"));
 fastify.register(require("fastify-express"));
 
 //connect MongoDB
 console.log("----------   From Server !   -----------");
-connectMongo.connectDB();
+//connectMongo.connectDB();
 
 //Configure routes for fastify
 const routePlugin = async () => {

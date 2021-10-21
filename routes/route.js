@@ -1,6 +1,6 @@
 const action = require("../methods/actions");
 const methods = action.functions;
-
+const verifyToken = require("../methods/utils");
 const routes = [
   {
     method: "GET",
@@ -51,6 +51,17 @@ const routes = [
     method: "POST",
     url: "/api/create-employee",
     handler: methods.CreateEmployee,
+  },
+  {
+    method: "GET",
+    url: "/api/authenticate-user",
+    handler: methods.AuthenticateUser,
+  },
+  {
+    method: "GET",
+    url: "/api/check-user",
+    beforeHandler: [verifyToken.authorizeToken],
+    handler: methods.CheckUser,
   },
 ];
 module.exports = routes;

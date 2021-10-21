@@ -9,7 +9,7 @@ const generateAccessToken = (user) => {
     },
     process.env.JWT_ACCESS_SECRET,
     {
-      expiresIn: "20s",
+      expiresIn: "50s",
     }
   );
 };
@@ -28,15 +28,16 @@ const generateRefreshToken = (user) => {
   );
 };
 const authorizeToken = (req, res, next) => {
-  const authHeader = req.headers.authorization;
-  if (authHeader) {
-    const token = authHeader.split(" ")[1];
-
-    jwt.verify(token, "mySecretKey", (err, user) => {
+  // const authHeader = req.headers.authorization;
+  const cookie = true;
+  console.log("COOKIE ::::: " + cookie);
+  if (cookie) {
+    // const token = authHeader.split(" ")[1];
+    const token = cookie;
+    jwt.verify(token, process.env.JWT_ACCESS_SECRET, (err, user) => {
       if (err) {
         return res.status(403).send({ msg: "Token is not valid!" });
       }
-
       req.user = user;
       next();
     });
@@ -44,4 +45,12 @@ const authorizeToken = (req, res, next) => {
     res.status(401).send({ msg: "You are not authenticated!" });
   }
 };
-module.exports = { generateAccessToken, generateRefreshToken, authorizeToken };
+const hello = async (req, res, next) => {
+  console.log("inside hello functions");
+};
+module.exports = {
+  generateAccessToken,
+  generateRefreshToken,
+  authorizeToken,
+  hello,
+};

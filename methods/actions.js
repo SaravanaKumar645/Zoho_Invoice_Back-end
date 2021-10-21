@@ -26,8 +26,40 @@ const transporter = nodeMailer.createTransport({
 });
 
 var functions = {
-  Home: function (req, res) {
-    res.send({ msg: "Hello there !", success: true });
+  Home: async (req, res) => {
+    await utils.hello(req, res);
+    res
+      .setCookie("accessToken", "checking token", {
+        domain: "https://zoho-invoice-clone.vercel.app/",
+        path: "/",
+        sameSite: "none",
+        httpOnly: true,
+        secure: true,
+      })
+      .send({ msg: "Hello there !", success: true });
+  },
+  CheckUser: async (req, res) => {
+    const token = req.cookies.accessToken;
+    console.log(token);
+    res.send({ msg: "you are logged in" });
+  },
+  AuthenticateUser: async (req, res) => {
+    const user = {
+      id: "123344",
+      name: "sarav",
+      email: "sarav@gmail.com",
+    };
+    const accessToken = utils.generateAccessToken(user);
+    const refreshToken = utils.generateRefreshToken(user);
+    res
+      .setCookie("accessToken", accessToken, {
+        domain: "https://zoho-invoice-server.herokuapp.com/",
+        path: "/",
+        sameSite: "none",
+        httpOnly: true,
+        secure: true,
+      })
+      .send({ accessToken: accessToken, refreshToken: refreshToken });
   },
   RegisterUser: async (req, res) => {
     const { fullName, email, password, companyName, location } = req.body;
