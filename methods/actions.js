@@ -30,7 +30,7 @@ var functions = {
     await utils.hello(req, res);
     res
       .setCookie("accessToken", "checking token", {
-        domain: "https://zoho-invoice-clone.vercel.app/",
+        domain: "https://zoho-invoice-clone.vercel.app",
         path: "/",
         sameSite: "none",
         httpOnly: true,
