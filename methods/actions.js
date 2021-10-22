@@ -31,7 +31,6 @@ var functions = {
     res
       .setCookie("accessToken", "checking token", {
         domain: "https://zoho-invoice-clone.vercel.app",
-        path: "/",
         sameSite: "none",
         httpOnly: true,
         secure: true,
