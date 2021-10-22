@@ -37,7 +37,7 @@ var functions = {
   CheckUser: async (req, res) => {
     const token = req.cookies.accessToken;
     console.log(token);
-    res.send({ msg: "you are logged in" });
+    res.send({ msg: "you are logged in", token: token });
   },
   AuthenticateUser: async (req, res) => {
     const user = {
