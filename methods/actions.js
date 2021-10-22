@@ -52,7 +52,7 @@ var functions = {
     const refreshToken = utils.generateRefreshToken(user);
     res
       .setCookie("accessToken", accessToken, {
-        domain: "https://zoho-invoice-server.herokuapp.com/",
+        domain: "https://zoho-invoice-clone.vercel.app",
         path: "/",
         sameSite: "none",
         httpOnly: true,
