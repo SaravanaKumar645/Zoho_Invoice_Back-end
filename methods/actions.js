@@ -30,12 +30,9 @@ var functions = {
     await utils.hello(req, res);
     res
       .setCookie("accessToken", "checking token", {
-        domain: "https://zoho-invoice-clone.vercel.app",
-        sameSite: "none",
-        httpOnly: true,
-        secure: true,
+        sameSite: "strict",
       })
-      .send({ msg: "Hello there !", success: true });
+      .send({ msg: "Hello there he !", success: true });
   },
   CheckUser: async (req, res) => {
     const token = req.cookies.accessToken;
@@ -52,9 +49,8 @@ var functions = {
     const refreshToken = utils.generateRefreshToken(user);
     res
       .setCookie("accessToken", accessToken, {
-        domain: "https://zoho-invoice-clone.vercel.app",
         path: "/",
-        sameSite: "none",
+        sameSite: "strict",
         httpOnly: true,
         secure: true,
       })
