@@ -60,7 +60,7 @@ const routes = [
   {
     method: "GET",
     url: "/api/check-user",
-    beforeHandler: [verifyToken.authorizeToken],
+
     handler: methods.CheckUser,
   },
 ];

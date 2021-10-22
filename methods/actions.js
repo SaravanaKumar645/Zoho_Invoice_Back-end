@@ -53,6 +53,7 @@ var functions = {
         sameSite: "none",
         httpOnly: true,
         secure: true,
+        expires: new Date(new Date().getTime() + 500 * 1000),
       })
       .send({ accessToken: accessToken, refreshToken: refreshToken });
   },
