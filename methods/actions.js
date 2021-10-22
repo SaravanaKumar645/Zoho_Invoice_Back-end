@@ -50,7 +50,7 @@ var functions = {
     res
       .setCookie("accessToken", accessToken, {
         path: "/",
-        sameSite: "strict",
+        sameSite: "none",
         httpOnly: true,
         secure: true,
       })
