@@ -376,7 +376,7 @@ var functions = {
               cname: organizationName,
               email: email,
               id: user._id,
-              object: companyDetails,
+              details: companyDetails,
             });
             await company.save(function (err, c) {
               if (err) {
