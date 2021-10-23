@@ -13,7 +13,7 @@ fastify.register(require("fastify-express"));
 
 //connect MongoDB
 console.log("----------   From Server !   -----------");
-//connectMongo.connectDB();
+connectMongo.connectDB();
 
 //Configure routes for fastify
 const routePlugin = async () => {
