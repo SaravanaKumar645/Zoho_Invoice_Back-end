@@ -6,6 +6,7 @@ const { OAuth2Client } = require("google-auth-library");
 const PasswordGenerator = require("generate-password");
 const utils = require("./utils");
 const client = new OAuth2Client(process.env.OAUTH_CLIENT_ID);
+const { verify } = require("jsonwebtoken");
 const fetch = (...args) =>
   import("node-fetch").then(({ default: fetch }) => fetch(...args));
 let refreshTokens = [];
@@ -27,12 +28,7 @@ const transporter = nodeMailer.createTransport({
 
 var functions = {
   Home: async (req, res) => {
-    await utils.hello(req, res);
-    res
-      .setCookie("accessToken", "checking token", {
-        sameSite: "strict",
-      })
-      .send({ msg: "Hello there he !", success: true });
+    res.send({ msg: "Hello there he !", success: true });
   },
   CheckUser: async (req, res) => {
     const token = req.cookies.accessToken;
@@ -47,6 +43,14 @@ var functions = {
     };
     const accessToken = utils.generateAccessToken(user);
     const refreshToken = utils.generateRefreshToken(user);
+    const { exp, email } = verify(accessToken, process.env.JWT_ACCESS_SECRET);
+    console.log(exp);
+    if (Date.now() >= exp * 1000) {
+      console.log("Expired" + Date.now() / 1000);
+    } else {
+      console.log("valid token" + email);
+    }
+
     res
       .setCookie("accessToken", accessToken, {
         path: "/",
@@ -347,32 +351,53 @@ var functions = {
 
   CreateCompany: async (req, res) => {
     try {
-      User.findOne({ email: req.body.email }, async function (err, user) {
-        if (err) {
-          console.log(err);
-          res.status(408);
-          return res.send({ msg: "failed" });
-        } else {
-          var company = new Company({
-            cname: req.body.cname,
-            email: req.body.email,
-            id: user._id,
-          });
-          await company.save(function (err, c) {
-            if (err) {
-              console.log(err);
-              res.status(408);
-              return res.send({ msg: "failed" });
-            } else {
-              res.status(200);
-              return res.send({
-                msg: c.cname + " company has been created",
-                cname: c.cname,
-              });
-            }
-          });
-        }
-      });
+      const { exp, email } = verify(
+        req.body.token,
+        process.env.JWT_ACCESS_SECRET
+      );
+      if (Date.now() >= exp * 1000) {
+        console.log("Expired");
+        res.code(401);
+        res.send({ success: false, msg: "Token Expired !Login again" });
+      } else {
+        console.log("valid token" + email);
+        User.findOne({ email: email }, async function (err, user) {
+          if (err) {
+            console.log(err);
+            res.code(408);
+            return res.send({
+              success: false,
+              msg: "Server Error ! Try Again",
+            });
+          } else {
+            const companyDetails = req.body.companyDetails;
+            const { organizationName } = companyDetails;
+            var company = new Company({
+              cname: organizationName,
+              email: email,
+              id: user._id,
+              object: companyDetails,
+            });
+            await company.save(function (err, c) {
+              if (err) {
+                console.log(err);
+                res.status(408);
+                return res.send({
+                  success: false,
+                  msg: "Cannot Save Details ! Try Again",
+                });
+              } else {
+                res.status(200);
+                return res.send({
+                  success: true,
+                  msg: "Organization created Successfully !",
+                  companyDetails: c.details,
+                });
+              }
+            });
+          }
+        });
+      }
     } catch (err) {
       console.log(err);
       res.code(408);

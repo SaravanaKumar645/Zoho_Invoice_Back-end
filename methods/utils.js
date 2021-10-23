@@ -3,13 +3,13 @@ const jwt = require("jsonwebtoken");
 const generateAccessToken = (user) => {
   return jwt.sign(
     {
-      id: user.id,
+      id: user._id,
       name: user.name,
       email: user.email,
     },
     process.env.JWT_ACCESS_SECRET,
     {
-      expiresIn: "50s",
+      expiresIn: "20d",
     }
   );
 };
@@ -17,7 +17,7 @@ const generateAccessToken = (user) => {
 const generateRefreshToken = (user) => {
   return jwt.sign(
     {
-      id: user.id,
+      id: user._id,
       name: user.name,
       email: user.email,
     },
@@ -27,19 +27,17 @@ const generateRefreshToken = (user) => {
     }
   );
 };
-const authorizeToken = (req, res, next) => {
+const authorizeToken = async (req, res, token) => {
   // const authHeader = req.headers.authorization;
-  const cookie = true;
-  console.log("COOKIE ::::: " + cookie);
-  if (cookie) {
+  if (token) {
     // const token = authHeader.split(" ")[1];
-    const token = cookie;
+    //const token = cookie;
     jwt.verify(token, process.env.JWT_ACCESS_SECRET, (err, user) => {
       if (err) {
         return res.status(403).send({ msg: "Token is not valid!" });
       }
       req.user = user;
-      next();
+      return true;
     });
   } else {
     res.status(401).send({ msg: "You are not authenticated!" });
