@@ -9,6 +9,7 @@ const client = new OAuth2Client(process.env.OAUTH_CLIENT_ID);
 const { verify } = require("jsonwebtoken");
 const fetch = (...args) =>
   import("node-fetch").then(({ default: fetch }) => fetch(...args));
+
 let refreshTokens = [];
 //nodemailer config
 const transporter = nodeMailer.createTransport({
@@ -43,13 +44,6 @@ var functions = {
     };
     const accessToken = utils.generateAccessToken(user);
     const refreshToken = utils.generateRefreshToken(user);
-    const { exp, email } = verify(accessToken, process.env.JWT_ACCESS_SECRET);
-    console.log(exp);
-    if (Date.now() >= exp * 1000) {
-      console.log("Expired" + Date.now() / 1000);
-    } else {
-      console.log("valid token" + email);
-    }
 
     res
       .setCookie("accessToken", accessToken, {
@@ -72,7 +66,8 @@ var functions = {
       }
       if (user) {
         console.log(user);
-        res.status(401).send({
+        res.code(408);
+        res.send({
           success: false,
           msg: "User already exists ! Try with different email",
         });
@@ -118,7 +113,7 @@ var functions = {
 
   LoginUser: async (req, res) => {
     const { email, password } = req.body;
-    await User.findOne({ email: email }, async (err, user) => {
+    await User.findOne({ email: email }, function (err, user) {
       if (err) {
         res.status(408);
         return res.send({
@@ -131,11 +126,14 @@ var functions = {
         return res.send({ success: false, msg: "User does not exist" });
       } else {
         console.log(user);
-        user.comparePassword(password, function (err, isMatch) {
+        user.comparePassword(password, async function (err, isMatch) {
           if (isMatch && !err) {
+            var userCompany = await Company.findOne({ email: email });
+            console.log(userCompany);
             const accessToken = utils.generateAccessToken(user);
             const refreshToken = utils.generateRefreshToken(user);
             refreshTokens.push(refreshToken);
+
             res.status(200).send({
               success: true,
               msg: "Login Successfull !",
@@ -144,8 +142,7 @@ var functions = {
               name: user.name,
               picture: user.picture,
               email: user.email,
-              company: user.companyName,
-              gps: user.location,
+              companyDetails: JSON.stringify(userCompany),
             });
           } else {
             res.status(401).send({
@@ -197,6 +194,7 @@ var functions = {
                       msg: "Failed to create User !. Try again",
                     });
                   } else {
+                    var userCompany = await Company.findOne({ email: email });
                     const accessToken = utils.generateAccessToken(newUser);
                     const refreshToken = utils.generateRefreshToken(newUser);
 
@@ -210,6 +208,7 @@ var functions = {
                       name: newUser.name,
                       email: newUser.email,
                       picture: newUser.picture,
+                      companyDetails: JSON.stringify(userCompany),
                     });
                   }
                 });
@@ -243,6 +242,7 @@ var functions = {
                       name: newUser.name,
                       email: newUser.email,
                       picture: newUser.picture,
+                      companyDetails: null,
                     });
                   }
                 });
@@ -294,6 +294,7 @@ var functions = {
                     msg: "Failed to create User !. Try again",
                   });
                 } else {
+                  var userCompany = await Company.findOne({ email: email });
                   const accessToken = utils.generateAccessToken(newUser);
                   const refreshToken = utils.generateRefreshToken(newUser);
 
@@ -307,6 +308,7 @@ var functions = {
                     name: newUser.name,
                     email: newUser.email,
                     picture: newUser.picture,
+                    companyDetails: JSON.stringify(userCompany),
                   });
                 }
               });
@@ -318,7 +320,7 @@ var functions = {
                 picture: picture,
                 expireToken: Date.now() + 180000000,
               });
-              await freshUser.save(async function (err, newUser) {
+              await freshUser.save(function (err, newUser) {
                 if (err) {
                   console.log(err);
                   res.code(408);
@@ -340,6 +342,7 @@ var functions = {
                     name: newUser.name,
                     email: newUser.email,
                     picture: newUser.picture,
+                    companyDetails: null,
                   });
                 }
               });

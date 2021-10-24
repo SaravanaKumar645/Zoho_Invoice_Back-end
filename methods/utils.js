@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-
+const Company = require("../models/company");
 const generateAccessToken = (user) => {
   return jwt.sign(
     {
@@ -43,12 +43,9 @@ const authorizeToken = async (req, res, token) => {
     res.status(401).send({ msg: "You are not authenticated!" });
   }
 };
-const hello = async (req, res, next) => {
-  console.log("inside hello functions");
-};
+
 module.exports = {
   generateAccessToken,
   generateRefreshToken,
   authorizeToken,
-  hello,
 };
